@@ -18,7 +18,7 @@ def contains_ext(filenames):
 		if file[-len(fileTypeToCheckFor):].lower() == fileTypeToCheckFor.lower():
 			# The above allows me to be dynamic to ensure that the extension being looked for will match whatever is put in, with or without the "."
 			return file
-			#return on the first find, doing so stops scanning the rest of the directory
+			# return on the first find, doing so stops scanning the rest of the directory
 			
 def scan_directories(path):
 	listOfMatchingFiles = []
@@ -34,14 +34,17 @@ def scan_directories(path):
 
 def extract_files(listOfFiles, directoryToExtractTo):
 	# Check what platform this is running on and set the unRAR location accordingly
+	# unRAR can be downloaded as part of WinRAR from http://www.rarlab.com/download.htm
 	if platform.startswith('darwin'):
+		# Looks for the unrar executable in the path that the script is being run from.
 		unrarLocation = "./unrar"
 		
-		#Used this to call unrar initially. Had problems using this on Windows, hence the switch to subprocess
-		#os.system("\'{0}\' x \"{1}\" \"{2}\"".format(unrarLocation, fileToExtract, directoryToExtractTo)) 
+		# Used this to call unrar initially. Had problems using this on Windows, hence the switch to subprocess
+		# os.system("\'{0}\' x \"{1}\" \"{2}\"".format(unrarLocation, fileToExtract, directoryToExtractTo)) 
 		
 	elif platform.startswith('win32'):
-		unrarLocation = "C:\\Program Files\\WinRAR\\unRAR.exe" #Default location of WinRAR 4.20 install on x64 systems
+		# Default location of WinRAR 4.20 install on x64 systems
+		unrarLocation = "C:\\Program Files\\WinRAR\\unRAR.exe"
 	amountOfFilesExtracted = 0
 	for fileToExtract in listOfFiles:
 		subprocess.call([unrarLocation, "x", fileToExtract, directoryToExtractTo])
@@ -58,12 +61,12 @@ def add_Last_Slash(pathToAlter):
 ######################################################################################################################################
 
 
-#Makes input work between 2.x and 3.x
+# Makes input work between 2.x and 3.x
 try: input = raw_input
 except NameError: pass
 
 
-#This is customisble, but it's mainly for RARs
+# This is customisble, but it's mainly for RARs
 fileTypeToCheckFor = ".rar" #input('Enter the extention to look for:')
 
 
