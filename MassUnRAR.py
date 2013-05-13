@@ -50,7 +50,8 @@ def extract_files(listOfFiles, directoryToExtractTo):
 		subprocess.call([unrarLocation, "x", fileToExtract, directoryToExtractTo])
 		amountOfFilesExtracted +=1
 	print("The amount of archives extracted out of: {}".format(amountOfFilesExtracted))
-	
+
+# If the extract path lacks a slash at the end, the the extract will fail. This add a slash based on system
 def add_Last_Slash(pathToAlter):
 	if platform.startswith('darwin'):
 		return pathToAlter + "/"
@@ -69,11 +70,11 @@ except NameError: pass
 # This is customisble, but it's mainly for RARs
 fileTypeToCheckFor = ".rar" #input('Enter the extention to look for:')
 
-
-locationToScan = input('Location to scan:')
+# Using the os.path.expanduser allows to account for the use of ~/ on OSX as this otherwise failed the valid path check. It also needs to be done on the extract path, as otherwise it will extract the wrong directory.
+locationToScan = os.path.expanduser(input('Location to scan:'))
 
 if is_valid_path(locationToScan):
-	extractPath =  input('Location to extract to:')
+	extractPath = os.path.expanduser(input('Location to extract to:'))
 	
 	# If the extractPath doesn't have a backslash at the end, add one otherwise it'll fail to extact
 	if  extractPath.endswith(("\\", "/")):
