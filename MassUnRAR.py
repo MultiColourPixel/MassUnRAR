@@ -15,8 +15,8 @@ def is_valid_path(path):
 
 def contains_ext(filenames):
 	for file in filenames:
+		# The below allows me to be dynamic to ensure that the extension being looked for will match whatever is put in, with or without the "."
 		if file[-len(fileTypeToCheckFor):].lower() == fileTypeToCheckFor.lower():
-			# The above allows me to be dynamic to ensure that the extension being looked for will match whatever is put in, with or without the "."
 			return file
 			# return on the first find, doing so stops scanning the rest of the directory
 			
@@ -66,7 +66,7 @@ def delete_source_data(listOfData):
 
 		
 
-######################################################################################################################################
+#########################################################################################################################
 
 
 # Makes input work between 2.x and 3.x
@@ -77,7 +77,8 @@ except NameError: pass
 # This is customisble, but it's mainly for RARs
 fileTypeToCheckFor = ".rar" #input('Enter the extention to look for:')
 
-# Using the os.path.expanduser allows to account for the use of ~/ on OSX as this otherwise failed the valid path check. It also needs to be done on the extract path, as otherwise it will extract the wrong directory.
+# Using the os.path.expanduser allows to account for the use of ~/ on OSX as this otherwise failed the valid path check.
+#It also needs to be done on the extract path, as otherwise it will extract the wrong directory.
 locationToScan = os.path.expanduser(input('Location to scan:'))
 
 
