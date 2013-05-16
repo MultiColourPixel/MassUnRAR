@@ -110,14 +110,12 @@ if is_valid_path(locationToScan):
 		print("Extract path doesn't contain a slash on the end, I'll add one for you!")
 		extractPath = add_Last_Slash(extractPath)
 		print(extractPath)
-		#scan_directories(x)
 		
 	listOfItemsToBeExtracted = scan_directories(locationToScan)[0]
 	listOfFoldersToDelete = scan_directories(locationToScan)[1]
 
-	
 	if listOfItemsToBeExtracted:
-		print("\nList {} of items found:".format(len(listOfItemsToBeExtracted)))
+		print("\nList of {} items found:".format(len(listOfItemsToBeExtracted)))
 		print(listOfItemsToBeExtracted)
 		extract_files(listOfItemsToBeExtracted, extractPath)
 		if deleteSource:
