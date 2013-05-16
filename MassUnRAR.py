@@ -22,15 +22,13 @@ def contains_ext(filenames):
 			
 def scan_directories(path):
 	listOfMatchingFiles = []
-	for dirname, dirnames, filenames in os.walk(path):
+	listOfHoldingDirectories = []
+	for dirname, subdirnames, filenames in os.walk(path):
 		if contains_ext(filenames):
 			file = contains_ext(filenames)
-			#print(dirname)
-			#print(filenames)		# This just prints a list of all the filenames in the directory
-			#for subdirname in dirnames:
-			#print ((os.path.join(dirname, file)))
+			listOfHoldingDirectories.append(dirname)
 			listOfMatchingFiles.append(os.path.join(dirname, file))
-	return listOfMatchingFiles
+	return [listOfMatchingFiles,listOfHoldingDirectories]
 
 def extract_files(listOfFiles, directoryToExtractTo):
 	# Check what platform this is running on and set the unRAR location accordingly
@@ -45,6 +43,8 @@ def extract_files(listOfFiles, directoryToExtractTo):
 	elif platform.startswith('win32'):
 		# Default location of WinRAR 4.20 install on x64 systems
 		unrarLocation = "C:\\Program Files\\WinRAR\\unRAR.exe"
+	else:
+		print("Sorry! You're running this on an unsupported platform. \nThis script doesn't support it. It's designed for OSX and Windows.")
 	amountOfFilesExtracted = 0
 	for fileToExtract in listOfFiles:
 		subprocess.call([unrarLocation, "x", fileToExtract, directoryToExtractTo])
@@ -58,6 +58,13 @@ def add_Last_Slash(pathToAlter):
 	elif platform.startswith('win32'):
 		return pathToAlter + "\\"
 
+def delete_source_data(listOfData):
+	for folder in listOfData:
+		rmtree(folder,True)
+		print("Deleted: {}".format(folder))
+	
+
+		
 
 ######################################################################################################################################
 
@@ -73,20 +80,47 @@ fileTypeToCheckFor = ".rar" #input('Enter the extention to look for:')
 # Using the os.path.expanduser allows to account for the use of ~/ on OSX as this otherwise failed the valid path check. It also needs to be done on the extract path, as otherwise it will extract the wrong directory.
 locationToScan = os.path.expanduser(input('Location to scan:'))
 
+
 if is_valid_path(locationToScan):
-	extractPath = os.path.expanduser(input('Location to extract to:'))
+	# Check to see if the source data should be deleted
+	loopCondition = True
+	while loopCondition:
+		deleteSource = input("Delete source files? [Y/N]:")
+		if deleteSource.lower() == 'y':
+			deleteSource = True
+			print("Ok, the source files will be deleted.\n")
+			loopCondition = False
+		elif deleteSource.lower() == 'n':
+			deleteSource = False
+			print("Source files will NOT be deleted.\n")
+			loopCondition = False
+		else:
+			print("You have not entered a correct value. Please either either a Y or N\n")
 	
-	# If the extractPath doesn't have a backslash at the end, add one otherwise it'll fail to extact
-	if  extractPath.endswith(("\\", "/")):
+	extractPath = os.path.expanduser(input('Location to extract to:'))
+	# If no value is entered for the extract path, the extracts would be placed in the script's location
+	if extractPath =='':
+		print("Extract path was not entered. Will output to the source path.")
+		extractPath = locationToScan
+		extractPath = add_Last_Slash(extractPath)
+	elif extractPath.endswith(("\\", "/")):
+		# If the extractPath doesn't have a backslash at the end, add one otherwise it'll fail to extact
 		print("Good to go!")
 	else:
 		print("Extract path doesn't contain a slash on the end, I'll add one for you!")
 		extractPath = add_Last_Slash(extractPath)
 		print(extractPath)
 		#scan_directories(x)
-	listOfItemsToBeExtracted = scan_directories(locationToScan)
-	print("List of items found \n")
+		
+	listOfItemsToBeExtracted = scan_directories(locationToScan)[0]
+	listOfFoldersToDelete = scan_directories(locationToScan)[1]
+
 	
 	if listOfItemsToBeExtracted:
+		print("\nList {} of items found:".format(len(listOfItemsToBeExtracted)))
 		print(listOfItemsToBeExtracted)
 		extract_files(listOfItemsToBeExtracted, extractPath)
+		if deleteSource:
+			print("\nList of {} folders to delete:".format(len(listOfFoldersToDelete)))
+			print(listOfFoldersToDelete)
+			delete_source_data (listOfFoldersToDelete)
